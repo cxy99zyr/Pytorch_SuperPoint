@@ -1,0 +1,82 @@
+data:
+    name: 'synthetic_shapes'
+    primitives: 'all'
+    truncate:
+        draw_ellipses: 0.3
+        draw_stripes: 0.2
+        gaussian_noise: 0.1
+    cache_in_memory: true
+    validation_size: 500
+    suffix: 'v10'
+    add_augmentation_to_test_set: false  # 设置为true以评估带噪声的数据
+    visualize_generation: false    # 可视化生成的形状
+    visualize_samples: false      # 可视化数据集样本
+    visualize_augmentation: false # 可视化数据增强效果
+    preprocessing:
+        blur_size: 21
+        resize: [120, 160]  # 应该是8的倍数
+    generation:
+        split_sizes:
+            training: 50
+            validation: 10
+            test: 20
+    augmentation:
+        photometric:
+            enable: true
+            primitives: [
+                'random_brightness', 'random_contrast', 'additive_speckle_noise',
+                'additive_gaussian_noise', 'additive_shade', 'motion_blur' ]
+            params:
+                random_brightness: {max_abs_change: 75}
+                random_contrast: {strength_range: [0.3, 1.8]}
+                additive_gaussian_noise: {stddev_range: [0, 15]}
+                additive_speckle_noise: {prob_range: [0, 0.0035]}
+                additive_shade:
+                    transparency_range: [-0.5, 0.8]
+                    kernel_size_range: [50, 100]
+                motion_blur: {max_kernel_size: 7}
+        homographic:
+            enable: true
+            params:
+                translation: true
+                rotation: true
+                scaling: true
+                perspective: true
+                scaling_amplitude: 0.2
+                perspective_amplitude_x: 0.2
+                perspective_amplitude_y: 0.2
+                patch_ratio: 0.8
+                max_angle: 1.57  # 3.14
+                allow_artifacts: true
+                translation_overflow: 0.05
+            valid_border_margin: 2
+
+model:
+    name: 'magic_point'
+    batch_size: 64
+    eval_batch_size: 50
+    learning_rate: 0.001
+    kernel_reg: 0.
+    detection_threshold: 0.001  # 1/65
+    nms: 4
+    data_format: 'channels_first'  # PyTorch使用channels_first格式
+    device: 'cuda'  # 使用CPU训练
+    visualize_predictions: true  # 可视化预测结果
+    optimizer:
+        name: 'adam'
+        weight_decay: 0.0
+    scheduler:  # 学习率调度器配置
+        name: 'step'
+        step_size: 10000
+        gamma: 0.1
+
+train:
+    num_epochs: 100  # 替代train_iter
+    eval_interval: 10  # 替代validation_interval
+    save_interval: 50
+    keep_checkpoints: 20
+    num_workers: 0  # 数据加载器的工作进程数
+    pin_memory: true  # 数据加载器是否使用固定内存
+    eval_iter: 20
+
+seed: 0 

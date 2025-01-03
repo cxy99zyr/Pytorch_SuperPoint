@@ -1,0 +1,100 @@
+data:
+  name: synthetic_shapes
+  primitives: all
+  truncate:
+    draw_ellipses: 0.3
+    draw_stripes: 0.2
+    gaussian_noise: 0.1
+  cache_in_memory: true
+  validation_size: 500
+  suffix: v10
+  add_augmentation_to_test_set: false
+  visualize_generation: false
+  visualize_samples: false
+  visualize_augmentation: false
+  preprocessing:
+    blur_size: 21
+    resize:
+    - 120
+    - 160
+  generation:
+    split_sizes:
+      training: 50
+      validation: 10
+      test: 20
+  augmentation:
+    photometric:
+      enable: true
+      primitives:
+      - random_brightness
+      - random_contrast
+      - additive_speckle_noise
+      - additive_gaussian_noise
+      - additive_shade
+      - motion_blur
+      params:
+        random_brightness:
+          max_abs_change: 75
+        random_contrast:
+          strength_range:
+          - 0.3
+          - 1.8
+        additive_gaussian_noise:
+          stddev_range:
+          - 0
+          - 15
+        additive_speckle_noise:
+          prob_range:
+          - 0
+          - 0.0035
+        additive_shade:
+          transparency_range:
+          - -0.5
+          - 0.8
+          kernel_size_range:
+          - 50
+          - 100
+        motion_blur:
+          max_kernel_size: 7
+    homographic:
+      enable: true
+      params:
+        translation: true
+        rotation: true
+        scaling: true
+        perspective: true
+        scaling_amplitude: 0.2
+        perspective_amplitude_x: 0.2
+        perspective_amplitude_y: 0.2
+        patch_ratio: 0.8
+        max_angle: 1.57
+        allow_artifacts: true
+        translation_overflow: 0.05
+      valid_border_margin: 2
+model:
+  name: magic_point
+  batch_size: 64
+  eval_batch_size: 50
+  learning_rate: 0.001
+  kernel_reg: 0.0
+  detection_threshold: 0.001
+  nms: 4
+  data_format: channels_first
+  device: cuda
+  visualize_predictions: true
+  optimizer:
+    name: adam
+    weight_decay: 0.0
+  scheduler:
+    name: step
+    step_size: 10000
+    gamma: 0.1
+train:
+  num_epochs: 100
+  eval_interval: 10
+  save_interval: 50
+  keep_checkpoints: 20
+  num_workers: 0
+  pin_memory: true
+  eval_iter: 20
+seed: 0
